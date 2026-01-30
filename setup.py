@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="promptshields",
-    version="2.0.6",
+    version="2.0.7",
     author="Neuralchemy",
     author_email="security@neuralchemy.com",
     description="Production-Grade LLM Security Framework - Protect against prompt injection, jailbreaks, and data leakage",
