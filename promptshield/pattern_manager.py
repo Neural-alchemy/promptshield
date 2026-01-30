@@ -51,7 +51,7 @@ class PatternManager:
         self._lock = threading.RLock()  # Reentrant lock
         
         # Load initial patterns
-        self._load_patterns()
+        self.patterns = self._load_patterns()
     
     def _load_patterns(self) -> Dict:
         """Load all pattern files from directory"""
