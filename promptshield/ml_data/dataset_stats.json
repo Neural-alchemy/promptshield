@@ -1,0 +1,12 @@
+{
+  "total_samples": 7700,
+  "train_samples": 5390,
+  "val_samples": 1155,
+  "test_samples": 1155,
+  "malicious_samples": 0,
+  "benign_samples": 7700,
+  "attack_types": [
+    "benign",
+    "edge_case"
+  ]
+}
