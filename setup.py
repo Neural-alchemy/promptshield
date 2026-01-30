@@ -4,17 +4,24 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name="promptshield",
-    version="2.0.0",
-    author="Neural Alchemy",
-    author_email="contact@neuralalchemy.ai",
-    description="Universal AI security framework - Protect LLM applications from prompt injection and adversarial attacks",
+    name="promptshields",
+    version="2.0.3",
+    author="Neuralchemy",
+    author_email="security@neuralchemy.com",
+    description="Production-Grade LLM Security Framework - Protect against prompt injection, jailbreaks, and data leakage",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/Neural-alchemy/promptshield",
-    packages=find_packages(),
+    packages=find_packages(include=['promptshield', 'promptshield.*']),
+    include_package_data=True,
+    package_data={
+        'promptshield': [
+            'attack_db/*/*.json',
+            'attack_db/**/*.json',
+        ],
+    },
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "Topic :: Security",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
@@ -27,14 +34,11 @@ setup(
     ],
     python_requires=">=3.8",
     install_requires=[
-        # No heavy dependencies - lightweight by design
+        "numpy>=1.20.0",
+        "scikit-learn>=1.0.0",
+        "cryptography>=3.4.0",
     ],
     extras_require={
         "dev": ["pytest", "black", "flake8"],
-        "semantic": ["sentence-transformers"],  # Optional for semantic matching
-    },
-    include_package_data=True,
-    package_data={
-        "promptshield": ["attack_db/**/*.json"],
     },
 )

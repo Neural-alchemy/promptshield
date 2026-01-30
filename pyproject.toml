@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "promptshields"
-version = "2.0.1"
-description = "Enterprise-Grade LLM Security Framework - Protect against prompt injection, jailbreaks, and data leakage"
+version = "2.0.3"
+description = "Production-Grade LLM Security Framework - Protect against prompt injection, jailbreaks, and data leakage"
 readme = "README.md"
 requires-python = ">=3.8"
 license = {text = "MIT"}
@@ -71,7 +71,7 @@ promptshield-sign = "promptshield.scripts.sign_models:main"
 promptshield-test = "promptshield.scripts.run_evasion_tests:main"
 
 [tool.setuptools]
-packages = ["promptshield", "promptshield.pii", "promptshield.security", "promptshield.testing", "promptshield.training"]
+packages = {find = {include = ["promptshield", "promptshield.*"]}}
 
 [tool.setuptools.package-data]
 promptshield = [

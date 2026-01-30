@@ -223,9 +223,13 @@ class Shield:
         
         # 2. Pattern matching (fast check)
         if self.config["patterns"]:
-            self.pattern_manager = PatternManager(
-                self.config["pattern_db"]
-            )
+            import os
+            pkg_dir = os.path.dirname(os.path.abspath(__file__))
+            pattern_db = self.config["pattern_db"]
+            # If pattern_db is the old hardcoded path, use package-relative path
+            if pattern_db == "promptshield/attack_db":
+                pattern_db = os.path.join(pkg_dir, "attack_db")
+            self.pattern_manager = PatternManager(pattern_db)
         
         # 3. Session anomaly detection
         if self.config["session_tracking"]:
