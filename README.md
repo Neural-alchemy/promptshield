@@ -52,6 +52,12 @@ if result['blocked']:
 
 ---
 
+## 🏗️ Layered Defense Architecture
+
+![Layered Defense Architecture](assets/layered_defense_dfd.png)
+
+**Don't use one shield everywhere.** Layer them strategically:
+
 ## Security Modes
 
 Choose the right tier for your application:
