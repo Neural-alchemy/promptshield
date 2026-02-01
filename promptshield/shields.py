@@ -202,9 +202,17 @@ class Shield:
             **kwargs
         }
         
+        # Initialize ML attributes (must be before _build_pipeline)
+        self.models = {}
+        self.vectorizer = None
+        
         # Build component pipeline
         self.components = []
         self._build_pipeline(custom_components or [])
+        
+        # Load ML models if configured
+        if self.config["models"]:
+            self._load_ml_models()
         
         # Initialize subsystems
         self._init_subsystems()
