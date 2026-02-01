@@ -19,15 +19,16 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-ROADMAP.md
 
-# Virtual environments
-venv/
-ENV/
-env/
-.venv
-env.bak/
-venv.bak/
+# Testing & Development (Colab scripts)
+*TEST*.py
+*COLAB*.py
+*VERIFY*.py
+SHIELD_MODES_GUIDE.md
+ML_DETECTION_TEST.py
+BALANCED_ML_TEST.py
+FULL_ML_TEST.py
+FINAL_VERIFY.py
 
 # IDE
 .vscode/
@@ -36,47 +37,21 @@ venv.bak/
 *.swo
 *~
 
-# Security - Never commit these!
-*.pem
-*.key
-*.sig
-promptshield/security/keys/
-
-# Development files (not for end users)
-ml_data/
-notebooks/
-*.ipynb
-.ipynb_checkpoints
-
-# Most scripts are for development only
-# Keep only essential user-facing scripts
-scripts/*
-!scripts/generate_keys.py
-!scripts/sign_models.py
-!scripts/run_evasion_tests.py
-!scripts/test_pii_detection.py
-!scripts/validate_training_data.py
-
 # OS
 .DS_Store
 Thumbs.db
 
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
-.tox/
-.nox/
-coverage.xml
-*.cover
-.hypothesis/
+# Security
+*.pem
+*.key
+*.sig
 
-# Logs
-*.log
-logs/
+# Documentation (only README.md should be public)
+PHASE*.md
+QUICKSTART.md
+internal_notes.md
 
-# Project specific
-*.gguf
-models/
-temp/
-scratch/
+# Environments
+venv/
+ENV/
+env/
