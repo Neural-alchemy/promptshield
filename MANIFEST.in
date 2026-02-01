@@ -8,6 +8,9 @@ include PHASE3_README.md
 recursive-include promptshield/attack_db *.json
 recursive-include promptshield *.py
 
+# Include ML models
+recursive-include promptshield/models *.pkl
+
 # Exclude unnecessary files
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]

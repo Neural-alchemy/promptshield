@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="promptshields",
-    version="2.1.1",
+    version="2.1.2",
     author="Neuralchemy",
     author_email="security@neuralchemy.com",
     description="Production-Grade LLM Security Framework - Protect against prompt injection, jailbreaks, and data leakage",
@@ -18,6 +18,7 @@ setup(
         'promptshield': [
             'attack_db/*/*.json',
             'attack_db/**/*.json',
+            'models/*.pkl',
         ],
     },
     classifiers=[
