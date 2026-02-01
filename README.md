@@ -61,6 +61,74 @@ Choose the right security tier for your application:
 
 ---
 
+## 🏗️ Layered Defense Architecture
+
+**PromptShields is designed for defense-in-depth.** Use multiple shields at different trust boundaries in your application:
+
+### Why Multiple Shields?
+
+Different parts of your application have different security requirements and performance budgets. Layering shields provides:
+- ✅ **Defense-in-depth**: Multiple checkpoints catch different attack vectors
+- ✅ **Performance optimization**: Lightweight checks first, heavy analysis only where needed
+- ✅ **Granular control**: Different rules for different components
+
+### Example: Multi-Agent LLM System
+
+```python
+from promptshield import Shield
+
+# 1. User Input Layer (Highest Security)
+user_shield = Shield.secure()  # 3 ML models + all protections
+
+# 2. Agent Communication Layer (Balanced)
+agent_shield = Shield.balanced()  # Fast pattern matching + session tracking
+
+# 3. Internal API Layer (Fastest)
+internal_shield = Shield.fast()  # Lightweight pattern matching only
+
+# Application flow
+def process_request(user_input, system_prompt):
+    # Layer 1: Validate user input with maximum security
+    result = user_shield.protect_input(user_input, system_prompt)
+    if result['blocked']:
+        return {"error": "Invalid input"}
+    
+    # Layer 2: Agent processes the input
+    agent_output = agent.process(user_input)
+    
+    # Validate agent output before sending to another agent
+    result = agent_shield.protect_input(agent_output, "agent context")
+    if result['blocked']:
+        return {"error": "Suspicious agent behavior"}
+    
+    # Layer 3: Fast check before internal API call
+    result = internal_shield.protect_input(agent_output, "")
+    if result['blocked']:
+        log_security_event()
+        return {"error": "Internal security violation"}
+    
+    return {"success": True, "data": agent_output}
+```
+
+### Common Layering Patterns
+
+| Layer | Shield | Rationale |
+|-------|--------|-----------|
+| **User Input** | `secure()` or `strict()` | Untrusted source, needs maximum protection |
+| **Inter-Agent** | `balanced()` | Semi-trusted, needs session tracking |
+| **Internal APIs** | `fast()` | Trusted components, lightweight check |
+| **High-Value Outputs** | `strict()` | Prevent data leakage |
+
+### Benefits of Layering
+
+1. **Performance**: Run expensive ML models only on untrusted input
+2. **Granularity**: Different shields for different threat models
+3. **Redundancy**: Multiple detection layers increase security
+4. **Flexibility**: Mix and match shields based on your architecture
+
+
+---
+
 ## 🤖 ML-Powered Detection
 
 Higher security tiers include machine learning models for advanced threat detection:
