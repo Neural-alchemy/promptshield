@@ -81,6 +81,13 @@ Shield.secure()     # ~12ms - Maximum security (+ 3 ML models ensemble)
 
 MIT License - see [LICENSE](LICENSE)
 
+PromptShield is released under the MIT License.
+
+Neural Alchemy maintains the canonical upstream implementation.
+Forks and third-party copies may not include the latest security
+updates, ML-based detection, or attack coverage.
+
+
 ---
 
 ## Links
