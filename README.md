@@ -2,6 +2,12 @@
 
 **Enterprise LLM Security in 3 Lines of Code**
 
+Before using our tool, you can test it against prompt injection attacks.
+
+Step 1: Implement the tool.
+Step 2: Find different prompt injection attacks from promptshield/attack_db.
+Step 3: Use those attacks to test your implementation (see DOCUMENTATION.md).
+
 [![PyPI](https://img.shields.io/pypi/v/promptshields.svg)](https://pypi.org/project/promptshields/)
 [![Python](https://img.shields.io/pypi/pyversions/promptshields.svg)](https://pypi.org/project/promptshields/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
