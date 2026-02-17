@@ -102,9 +102,9 @@ updates, ML-based detection, or attack coverage.
 
 ## Links
 
-- 📦 [PyPI Package](https://pypi.org/project/promptshields/)
-- 🐙 [GitHub Repository](https://github.com/Neural-alchemy/promptshield)
-- 📖 [Documentation](DOCUMENTATION.md)
+-  [PyPI Package](https://pypi.org/project/promptshields/)
+-  [GitHub Repository](https://github.com/Neural-alchemy/promptshield)
+-  [Documentation](DOCUMENTATION.md)
 
 ---
 
