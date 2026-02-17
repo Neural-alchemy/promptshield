@@ -81,7 +81,7 @@ Shield.secure()     # ~12ms - Maximum security (+ 3 ML models ensemble)
 
 ## Documentation
 
-📚 **[Full Documentation](DOCUMENTATION.md)** - Complete guide with framework integrations
+ **[Full Documentation](DOCUMENTATION.md)** - Complete guide with framework integrations
 
 ⚡ **[Quickstart Guide](QUICKSTART.md)** - Get running in 5 minutes
 
