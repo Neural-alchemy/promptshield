@@ -54,11 +54,11 @@ if result['blocked']:
 | **ML Models** | Included | None | Black box |
 
 ### What We Block
-- ✅ Prompt injection attacks
-- ✅ Jailbreak attempts  
-- ✅ System prompt extraction
-- ✅ PII leakage
-- ✅ Session anomalies
+- Prompt injection attacks
+- Jailbreak attempts  
+- System prompt extraction
+- PII leakage
+- Session anomalies
 
 ---
 
