@@ -1,5 +1,6 @@
 # PromptShields
 
+c
 **Enterprise LLM Security in 3 Lines of Code**
  
 ```
@@ -22,7 +23,7 @@ Stop prompt injection, jailbreaks, and data leaks in production LLM applications
 ---
 
 ## Installation
-
+latest version 2.1.4 
 ```bash
 pip install promptshields
 ```
