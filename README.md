@@ -1,7 +1,7 @@
 # PromptShields
 
 
-** Secure AI tools  in 3 Lines of Code**
+**Secure AI tools  in 3 Lines of Code**
  
 ```
 Before using our tool, you can test it against prompt injection attacks.
