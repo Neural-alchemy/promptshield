@@ -1,6 +1,6 @@
 # PromptShields
 
-c
+
 **Enterprise LLM Security in 3 Lines of Code**
  
 ```
