@@ -46,12 +46,12 @@ if result['blocked']:
 | **Async** | ✅ Native | DIY | Varies |
 
 ### What We Block
-- 🛡️ Prompt injection attacks (direct + indirect)
-- 🎭 Jailbreak attempts (DAN, persona replacement)
-- 🔑 System prompt extraction
-- 🔒 PII leakage
-- 📊 Session anomalies
-- 🔤 Encoded/obfuscated attacks (Base64, URL, Unicode)
+-  Prompt injection attacks (direct + indirect)
+-  Jailbreak attempts (DAN, persona replacement)
+-  System prompt extraction
+-  PII leakage
+-  Session anomalies
+-  Encoded/obfuscated attacks (Base64, URL, Unicode)
 
 ---
 
