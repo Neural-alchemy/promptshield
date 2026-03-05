@@ -43,7 +43,7 @@ if result['blocked']:
 | **Privacy** | 100% Local | Local | Cloud |
 | **F1 Score** | 0.97 (RF) / 0.96 (DeBERTa) | ~0.60 | ~0.95 |
 | **ML Models** | 4 + DeBERTa | None | Black box |
-| **Async** | ✅ Native | DIY | Varies |
+| **Async** |  Native | DIY | Varies |
 
 ### What We Block
 -  Prompt injection attacks (direct + indirect)
@@ -129,9 +129,9 @@ Pre-trained models: [neuralchemy/prompt-injection-detector](https://huggingface.
 
 ## Documentation
 
-📖 **[Full Documentation](DOCUMENTATION.md)** — Complete guide with framework integrations
+ **[Full Documentation](DOCUMENTATION.md)** — Complete guide with framework integrations
 
-🚀 **[Quickstart Guide](QUICKSTART.md)** — Get running in 5 minutes
+**[Quickstart Guide](QUICKSTART.md)** — Get running in 5 minutes
 
 ---
 
