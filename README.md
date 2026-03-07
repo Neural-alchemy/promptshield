@@ -1,4 +1,5 @@
 # PromptShields
+**⚠️This project is evolving rapidly occasional instability is expected** 
 
 **Secure AI Applications in 3 Lines of Code**
 
