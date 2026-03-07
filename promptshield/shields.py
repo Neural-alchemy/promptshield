@@ -155,7 +155,14 @@ class Shield:
         
         # Allowlist / Custom rules
         allowlist: Optional[List[str]] = None,
+        allowlist_file: Optional[str] = None,
         custom_patterns: Optional[List[str]] = None,
+        custom_patterns_file: Optional[str] = None,
+        
+        # Webhooks (v2.6.0)
+        webhook_url: Optional[str] = None,
+        webhook_min_threat: float = 0.5,
+        webhook_include_input: bool = False,
         
         # Performance
         cache_predictions: bool = True,
@@ -189,6 +196,24 @@ class Shield:
             async_mode: Enable async operations
             custom_components: List of custom component names
         """
+        # Resolve allowlist from file if provided
+        merged_allowlist = list(allowlist or [])
+        if allowlist_file:
+            from .config import load_allowlist_file
+            merged_allowlist.extend(load_allowlist_file(allowlist_file))
+        
+        # Resolve custom patterns from file if provided
+        merged_patterns = list(custom_patterns or [])
+        if custom_patterns_file:
+            import os
+            if not os.path.exists(custom_patterns_file):
+                raise FileNotFoundError(f"Custom patterns file not found: {custom_patterns_file}")
+            with open(custom_patterns_file, "r", encoding="utf-8") as f:
+                merged_patterns.extend(
+                    line.strip() for line in f 
+                    if line.strip() and not line.startswith("#")
+                )
+        
         self.config = {
             "patterns": patterns,
             "pattern_db": pattern_db or "promptshield/attack_db",
@@ -203,12 +228,25 @@ class Shield:
             "pii_detection": pii_detection,
             "pii_redaction": pii_redaction,
             "verify_models": verify_models,
-            "allowlist": [p.lower().strip() for p in (allowlist or [])],
-            "custom_patterns": custom_patterns or [],
+            "allowlist": [p.lower().strip() for p in merged_allowlist],
+            "custom_patterns": merged_patterns,
+            "webhook_url": webhook_url,
+            "webhook_min_threat": webhook_min_threat,
+            "webhook_include_input": webhook_include_input,
             "cache_predictions": cache_predictions,
             "async_mode": async_mode,
             **kwargs
         }
+        
+        # Initialize webhook notifier (v2.6.0)
+        self.webhook = None
+        if webhook_url:
+            from .webhooks import WebhookNotifier
+            self.webhook = WebhookNotifier(
+                url=webhook_url,
+                min_threat_level=webhook_min_threat,
+                include_input=webhook_include_input,
+            )
         
         # Initialize ML attributes (must be before _build_pipeline)
         self.models = {}
@@ -583,13 +621,16 @@ class Shield:
             for pattern in self.config["custom_patterns"]:
                 try:
                     if re.search(pattern, user_input, re.IGNORECASE):
-                        return {
+                        result = {
                             "blocked": True,
                             "reason": "custom_pattern",
                             "threat_level": 1.0,
                             "threat_breakdown": threat_breakdown,
                             "metadata": {"component": "custom_pattern", "pattern": pattern},
                         }
+                        if self.webhook:
+                            self.webhook.notify(result, user_input)
+                        return result
                 except re.error:
                     pass
 
@@ -612,7 +653,7 @@ class Shield:
             threat_level = max(threat_level, score)
 
             if matched:
-                return {
+                result = {
                     "blocked": True,
                     "reason": "pattern_match",
                     "rule": rule,
@@ -620,6 +661,9 @@ class Shield:
                     "threat_breakdown": threat_breakdown,
                     "metadata": {"component": "pattern_matcher"}
                 }
+                if self.webhook:
+                    self.webhook.notify(result, user_input)
+                return result
 
         # 3. ML model prediction
         if self.config["models"]:
@@ -628,13 +672,16 @@ class Shield:
             threat_level = max(threat_level, ml_threat)
 
             if ml_threat >= self.config["model_threshold"]:
-                return {
+                result = {
                     "blocked": True,
                     "reason": "ml_detection",
                     "threat_level": ml_threat,
                     "threat_breakdown": threat_breakdown,
                     "metadata": {"component": "ml_model"}
                 }
+                if self.webhook:
+                    self.webhook.notify(result, user_input)
+                return result
 
         # 4. Session anomaly detection
         if self.config["session_tracking"] and session_id:
@@ -647,13 +694,16 @@ class Shield:
             )
 
             if session_result["action"] == "block_session":
-                return {
+                result = {
                     "blocked": True,
                     "reason": session_result["reason"],
                     "session_threat": session_result["session_threat"],
                     "threat_breakdown": threat_breakdown,
                     "metadata": {"component": "session_anomaly"}
                 }
+                if self.webhook:
+                    self.webhook.notify(result, user_input)
+                return result
         
         # 5. Generate canary (if enabled)
         canary_data = None
@@ -895,6 +945,59 @@ class Shield:
             verify_models=True,
             **overrides
         )
+    
+    @classmethod
+    def from_config(cls, config_path: str, **overrides):
+        """
+        Create a Shield from a YAML/JSON config file.
+        
+        This enables centralized, code-free security policy management.
+        Security teams can update policies without touching application code.
+        
+        Args:
+            config_path: Path to .yml, .yaml, or .json config file
+            **overrides: Override specific config values
+            
+        Returns:
+            Configured Shield instance
+            
+        Example YAML (promptshield.yml):
+            preset: balanced
+            webhook_url: https://hooks.slack.com/...
+            allowlist_file: safe_phrases.txt
+            custom_patterns:
+              - "DROP TABLE"
+              - "rm -rf"
+        """
+        from .config import load_yaml, resolve_config
+        
+        raw = load_yaml(config_path)
+        config = resolve_config(raw)
+        
+        # Apply overrides
+        config.update(overrides)
+        
+        # Check for preset
+        preset = config.pop("preset", None)
+        
+        if preset:
+            factory = {
+                "fast": cls.fast,
+                "balanced": cls.balanced,
+                "strict": cls.strict,
+                "secure": cls.secure,
+                "paranoid": cls.paranoid,
+            }.get(preset)
+            
+            if not factory:
+                raise ValueError(
+                    f"Unknown preset '{preset}'. "
+                    f"Available: fast, balanced, strict, secure, paranoid"
+                )
+            
+            return factory(**config)
+        
+        return cls(**config)
 
 
 # ============================================
