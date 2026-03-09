@@ -44,15 +44,15 @@ if result['blocked']:
 | **Privacy** | 100% Local | Local | Cloud |
 | **F1 Score** | 0.97 (RF) / 0.96 (DeBERTa) | ~0.60 | ~0.95 |
 | **ML Models** | 4 + DeBERTa | None | Black box |
-| **Async** | ✅ Native | DIY | Varies |
+| **Async** | Native | DIY | Varies |
 
 ### What We Block
-- 🛡️ Prompt injection attacks (direct + indirect)
-- 🎭 Jailbreak attempts (DAN, persona replacement)
-- 🔑 System prompt extraction
-- 🔒 PII leakage
-- 📊 Session anomalies
-- 🔤 Encoded/obfuscated attacks (Base64, URL, Unicode)
+- Prompt injection attacks (direct + indirect)
+- Jailbreak attempts (DAN, persona replacement)
+- System prompt extraction
+- PII leakage
+- Session anomalies
+- Encoded/obfuscated attacks (Base64, URL, Unicode)
 
 ---
 
