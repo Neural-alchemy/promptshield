@@ -1,6 +1,4 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/Neural-alchemy/promptshield/main/docs/assets/promptshield-logo.png" alt="PromptShield Logo" width="200" />
-</p>
+
 
 # PromptShield
 
