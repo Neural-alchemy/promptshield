@@ -1,4 +1,8 @@
-# PromptShields
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Neural-alchemy/promptshield/main/docs/assets/promptshield-logo.png" alt="PromptShield Logo" width="200" />
+</p>
+
+# PromptShield
 
 **Secure AI Applications in 3 Lines of Code**
 
@@ -7,9 +11,9 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Downloads](https://pepy.tech/badge/promptshields)](https://pepy.tech/project/promptshields)
 
-Stop prompt injection, jailbreaks, and data leaks in production LLM applications.
+An enterprise-grade, bidirectional LLM security framework. Defend against prompt injection, jailbreaks, data leakage, and PII exposure in production applications.
 
----
+--------------------------------------------------------------------------------
 
 ## Installation
 
@@ -30,11 +34,9 @@ if result['blocked']:
     print(f"Breakdown: {result['threat_breakdown']}")
 ```
 
-**That's it.** Production-ready security in 3 lines.
+--------------------------------------------------------------------------------
 
----
-
-## Why PromptShields?
+## Features & Capabilities
 
 | Feature | PromptShields | DIY Regex | Paid APIs |
 |---------|---------------|-----------|-----------| 
@@ -43,21 +45,21 @@ if result['blocked']:
 | **Privacy** | 100% Local | Local | Cloud |
 | **F1 Score** | 0.97 (RF) / 0.96 (DeBERTa) | ~0.60 | ~0.95 |
 | **ML Models** | 4 + DeBERTa | None | Black box |
-| **Async** | ✅ Native | DIY | Varies |
+| **Async** | Native | DIY | Varies |
 
-### What We Block
-- 🛡️ Prompt injection attacks (direct + indirect)
-- 🎭 Jailbreak attempts (DAN, persona replacement)
-- 🔑 System prompt extraction
-- 🔒 PII leakage
-- 📊 Session anomalies
-- 🔤 Encoded/obfuscated attacks (Base64, URL, Unicode)
+### Protection Scope
+- Prompt injection attacks (direct and indirect)
+- Jailbreak attempts (DAN, persona replacement)
+- System prompt extraction
+- PII leakage and sensitive data exposure
+- Session anomalies
+- Encoded/obfuscated attacks (Base64, URL, Unicode)
 
----
+--------------------------------------------------------------------------------
 
 ## Security Modes
 
-Choose the right tier for your application:
+Choose the right tier for your application latency requirements:
 
 ```python
 Shield.fast()       # ~1ms  - High throughput (pattern matching only)
@@ -66,24 +68,39 @@ Shield.strict()     # ~7ms  - Sensitive apps (+ 1 ML model + PII detection)
 Shield.secure()     # ~12ms - Maximum security (4 ML models ensemble)
 ```
 
----
+--------------------------------------------------------------------------------
 
-## New in v2.7.0 (Streaming & Output Protection)
+## Upgrading to v3.0.0
 
-### Streaming LLM Output Scanning
-Securely wrap real-time LLM token streams to detect leaked PII or injected prompts before the full response finishes generating.
+Version 3.0.0 introduces a massive update with the new bidirectional **Output Filter**.
+
+### Output Engine (Data Leakage Prevention)
+Prevent sensitive data, PII, and proprietary knowledge from leaking through LLM generations securely before they reach the user.
+
+- **4-Layer Scanning Pipeline:** Defends against data leakage using Bloom Filters, Aho-Corasick exact matching, Honeypot traps, and Embedding-based Semantic Similarity checks.
+- **Semantic Leakage Detection:** Natively utilizes `sentence-transformers` to detect when the LLM's output is highly semantically similar to your proprietary system prompts or private databases.
+- **Contextual PII Redaction:** A heavily-optimized detection system to proactively redact sensitive information securely.
+
 ```python
-# Auto-scans generator stream chunks in real-time
-for safe_chunk in shield.protect_stream(llm.stream("Summarize...")):
-    print(safe_chunk, end="")
+from promptshield import OutputFilter
+
+filter = OutputFilter(
+    system_prompt="You are a secret agent...",
+    enforce_pii=True,
+    enforce_embeddings=True
+)
+
+safe_text, was_redacted = filter.scan_output("My name is John Doe.")
 ```
 
-### Upgraded Zero-Leakage Classical ML
-The `random_forest`, `logistic_regression`, `linear_svc`, and `gradient_boosting` ensemble models were retrained from scratch on a curated 14K dataset to completely eliminate "data leakage" false positives (e.g., blocking benign math/conversion queries). Combine with DeBERTa via `Shield.balanced()` for optimal F1 performance.
+### Performance & Hardening
+- Complete thread-safety for multi-tenant high-concurrency environments.
+- Strict HMAC-SHA256 authenticated webhooks.
+- Lazy-loading implementation for heavy dependencies (`numpy`, `sentence-transformers`) for lightning-fast cold starts.
 
----
+--------------------------------------------------------------------------------
 
-## New in v2.6.0 (Developer Experience)
+## Developer Experience
 
 ### YAML Configuration
 Launch shields declaratively without changing application code.
@@ -91,38 +108,14 @@ Launch shields declaratively without changing application code.
 shield = Shield.from_config("promptshield.yml")
 ```
 
-### Slack / Teams Webhooks
+### Slack and Teams Webhooks
 Instantly trigger webhooks whenever high-severity threats are blocked natively.
 ```python
 shield = Shield.balanced(webhook_url="https://hooks.slack.com/...")
 ```
 
----
-
-## New in v2.5.0
-
-### Per-Layer Threat Breakdown
-Every response now shows exactly which layer triggered:
-```python
-result = shield.protect_input(user_text, system_prompt)
-print(result["threat_breakdown"])
-# {"pattern_score": 0.0, "ml_score": 0.994, "session_score": 0.0}
-```
-
-### DeBERTa Support
-```python
-shield = Shield(models=["deberta"])  # Auto-downloads from HuggingFace
-```
-
-### Async Support
-```python
-from promptshield import AsyncShield
-
-shield = AsyncShield.balanced()
-result = await shield.aprotect_input(user_text, system_prompt)
-```
-
-### FastAPI Middleware
+### Async and FastAPI Support
+Native middleware integration for modern web frameworks.
 ```python
 from promptshield import Shield
 from promptshield.integrations.fastapi import PromptShieldMiddleware
@@ -130,21 +123,11 @@ from promptshield.integrations.fastapi import PromptShieldMiddleware
 app.add_middleware(PromptShieldMiddleware, shield=Shield.balanced())
 ```
 
-### Allowlist & Custom Rules
-```python
-shield = Shield(
-    patterns=True,
-    models=["random_forest"],
-    allowlist=["summarize this document", "translate to french"],
-    custom_patterns=[r"jailbreak|dan mode|evil\s*bot"],
-)
-```
-
----
+--------------------------------------------------------------------------------
 
 ## Benchmark Results
 
-Trained on [neuralchemy/Prompt-injection-dataset](https://huggingface.co/datasets/neuralchemy/Prompt-injection-dataset):
+Trained on the highly curated [neuralchemy/Prompt-injection-dataset](https://huggingface.co/datasets/neuralchemy/Prompt-injection-dataset):
 
 | Model | F1 | ROC-AUC | FPR | Latency |
 |-------|-----|---------|------|---------|
@@ -154,20 +137,20 @@ Trained on [neuralchemy/Prompt-injection-dataset](https://huggingface.co/dataset
 | LinearSVC | 0.959 | 0.995 | 10.3% | <1ms |
 | DeBERTa-v3-small | 0.959 | 0.950 | 8.5% | ~50ms |
 
-Pre-trained models: [neuralchemy/prompt-injection-detector](https://huggingface.co/neuralchemy/prompt-injection-detector) · [neuralchemy/prompt-injection-deberta](https://huggingface.co/neuralchemy/prompt-injection-deberta)
+Pre-trained models available on Hugging Face: 
+- [prompt-injection-detector](https://huggingface.co/neuralchemy/prompt-injection-detector)
+- [prompt-injection-deberta](https://huggingface.co/neuralchemy/prompt-injection-deberta)
 
----
+--------------------------------------------------------------------------------
 
 ## Documentation
 
-📖 **[Full Documentation](https://doc.neuralchemy.in)** — Complete guide with framework integrations, enterprise observability, and output filtering.
+Full API reference, guides, and integration details are available at the **[PromptShield Documentation Portal](https://doc.neuralchemy.in)**.
 
----
+--------------------------------------------------------------------------------
 
 ## License
 
 MIT License — see [LICENSE](LICENSE)
 
----
-
-**Built by [NeurAlchemy](https://github.com/Neural-alchemy)** — AI Security & LLM Safety Research
+**Built by [NeurAlchemy](https://github.com/Neural-alchemy)** — AI Security and LLM Safety Research
