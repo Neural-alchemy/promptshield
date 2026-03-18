@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/neuralchemy/openclay/main/docs/assets/logo.png" alt="OpenClay Logo" width="120"/>
+  <img src="https://raw.githubusercontent.com/openclay-ai/openclay/main/docs/assets/logo.png" alt="OpenClay Logo" width="120"/>
 </p>
 
 <h1 align="center">OpenClay</h1>
