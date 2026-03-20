@@ -18,6 +18,8 @@
 <a href="https://pepy.tech/projects/openclay">
   <img alt="Downloads" src="https://static.pepy.tech/badge/openclay">
 </a>
+
+  Previously published as <strong>promptshields</strong> (legacy downloads tracked separately).
 </p>
 
 ---
