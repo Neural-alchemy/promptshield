@@ -10,15 +10,11 @@
 </p>
 
 <p align="center">
-  
-
   <a href="https://pypi.org/project/openclay/"><img alt="PyPI" src="https://img.shields.io/pypi/v/openclay.svg"></a>
   <a href="https://github.com/neuralchemy/openclay"><img alt="License" src="https://img.shields.io/badge/license-MIT-blue"></a>
   <a href="https://doc.neuralchemy.in"><img alt="Docs" src="https://img.shields.io/badge/docs-neuralchemy.in-orange"></a>
 <a href="https://pepy.tech/projects/openclay"><img alt="OpenClay Downloads" src="https://static.pepy.tech/badge/openclay"></a>
 <a href="https://pepy.tech/projects/promptshields"><img alt="PromptShields Legacy Downloads" src="https://static.pepy.tech/badge/promptshields"></a>
-
-  
 </p>
 
 ---
@@ -51,11 +47,66 @@ pip install openclay[all]     # Everything
 
 ---
 
+## OpenClay v0.2.0 — The Secure Runtime 🚀
+
+With v0.2.0, OpenClay graduates from a "shield library" to a **secure execution runtime**.
+
+### 1. `ClayRuntime` (Protecting Agents & Callables)
+
+Instead of manually calling a shield before and after execution, you wrap your execution logic in `ClayRuntime`. It forces inputs and outputs to pass through explicit trust boundaries.
+
+```python
+from openclay import ClayRuntime
+
+# Create an execution environment with a strict policy
+runtime = ClayRuntime(policy="strict")
+
+# Shields fire automatically before input and after output
+result = runtime.run(my_llm_chain, "Analyze this data", context=system_prompt)
+
+if result.blocked:
+    print(f"Blocked by layer: {result.trace.layer} — Reason: {result.trace.reason}")
+else:
+    print(result.output)
+```
+
+**Drop-in shielding for LangChain / CrewAI:**
+```python
+wrapped_agent = runtime.wrap(langchain_agent)
+safe_result = wrapped_agent.run("research AI security")
+```
+
+**Explicit Exceptions:**
+```python
+# Bypass the input shield for a specific block of code
+with runtime.disable("input"):
+    result = runtime.run(my_chain, unsafe_input)
+```
+
+### 2. `ClayTool` (Securing Tool Blind-spots)
+
+The biggest unaddressed vulnerability in agentic AI is blindly trusting external tools. If an LLM executes a database query and the DB returns a malicious SQL injection or prompt hijack, the agent is compromised.
+
+`@ClayTool` intercepts and sanitizes tool outputs *before* they return to the agent's context.
+
+```python
+from openclay import ClayTool, Shield
+
+@ClayTool(shield=Shield.balanced())
+def search_web(query: str):
+    return api.search(query)  # Returned data is automatically scanned!
+
+try:
+    search_web("malicious query")
+except ToolOutputBlocked as e:
+    print(f"Tool output was malicious! Blocked by rule: {e.trace.rule}")
+```
+
+---
+
 ## openclay.shields — Core Threat Detection Engine ✅
 
 `openclay.shields` is the battle-tested security core of OpenClay, evolved from [PromptShield](https://github.com/neuralchemy/promptshield) v3.0 *(now deprecated — see [migration guide](#migration-promptshield--openclay) below)*.
-
-It provides a composable, multi-layer defense pipeline for LLM inputs and outputs.
 
 ### The Protection Pipeline
 
@@ -72,7 +123,9 @@ It provides a composable, multi-layer defense pipeline for LLM inputs and output
 
 ---
 
-### Quickstart
+### Low-Level Shield APIs
+
+You can still use the core primitives manually if preferred:
 
 ```python
 from openclay import Shield
@@ -91,15 +144,11 @@ else:
     print("✅ Input is safe.")
 ```
 
----
-
 ### Shield Presets
 
 Four built-in presets to match your latency / security trade-off:
 
 ```python
-from openclay import Shield
-
 # ⚡ Fast   — pattern-only, <1ms. Great for high-throughput APIs.
 shield = Shield.fast()
 
@@ -113,243 +162,24 @@ shield = Shield.strict()
 shield = Shield.secure()
 ```
 
-Any preset can be overridden in-place:
-
-```python
-# Balanced, but with PII detection and a webhook
-shield = Shield.balanced(
-    pii_detection=True,
-    webhook_url="https://your-siem.example.com/alerts"
-)
-```
-
----
-
-### Full Custom Configuration
-
-```python
-from openclay import Shield
-
-shield = Shield(
-    # Input protection
-    patterns=True,                   # Aho-Corasick pattern matching
-    models=["random_forest", "logistic_regression", "linear_svc"],  # ML ensemble
-    model_threshold=0.7,             # Block threshold (0.0–1.0)
-
-    # Session & rate control
-    rate_limiting=True,
-    rate_limit_base=100,             # Requests/min per user
-    session_tracking=True,
-    session_history=10,              # Messages to track per session
-
-    # Canary token protection
-    canary=True,
-    canary_mode="crypto",            # "simple" | "crypto" (HMAC-based)
-
-    # PII detection & redaction
-    pii_detection=True,
-    pii_redaction="smart",           # "smart" | "mask" | "partial"
-
-    # Allowlist & custom patterns
-    allowlist=["internal_system_key"],
-    custom_patterns=[r"exec\(.*\)"],
-
-    # Output protection (DLP)
-    sensitive_terms=["project_aurora", "api_key_prod"],
-    honeypot_tokens=["CANARY_GOLD"],
-    output_filter=["SELECT * FROM users", "Bearer eyJ"],
-
-    # Webhooks for SIEM integration
-    webhook_url="https://siem.example.com/alerts",
-    webhook_min_threat=0.5,
-
-    # Semantic embeddings (requires: pip install openclay[embed])
-    enforce_embeddings=True,
-    embedding_model="all-MiniLM-L6-v2",
-)
-```
-
----
-
-### Input Protection
-
-```python
-result = shield.protect_input(
-    user_input=user_message,
-    system_context=system_prompt,
-    user_id="user_abc",      # For rate limiting
-    session_id="sess_123",   # For session anomaly tracking
-)
-
-# Result shape:
-# {
-#   "blocked": bool,
-#   "reason": "pattern_match" | "ml_detection" | "rate_limit_exceeded" | "session_anomaly" | ...,
-#   "threat_level": float,           # 0.0 – 1.0
-#   "threat_breakdown": {
-#       "pattern_score": float,
-#       "ml_score": float,
-#       "session_score": float,
-#   },
-#   "canary_data": {...},            # Only if canary=True
-#   "metadata": {...}
-# }
-```
-
----
-
-### Output Protection
-
-```python
-result = shield.protect_output(
-    model_output=llm_response,
-    canary_data=canary_data,  # Pass canary_data from protect_input result
-)
-
-# Result shape:
-# {
-#   "blocked": bool,
-#   "reason": "canary_leak" | "sensitive_term" | "output_filter" | "pii_leak" | ...,
-#   "output": str | None,  # None if blocked, safe output otherwise
-#   "pii_findings": [...],
-# }
-```
-
----
-
-### Async Shield
-
-```python
-from openclay import AsyncShield
-
-shield = AsyncShield.balanced()
-
-result = await shield.protect_input(
-    user_input=user_message,
-    system_context=system_prompt,
-)
-```
-
----
-
-### Integrations
-
-```python
-# ── LangChain ──────────────────────────────────────────────────────────────
-from openclay.shields.integrations.langchain import OpenClayCallbackHandler
-
-handler = OpenClayCallbackHandler(shield=shield)
-chain = your_chain.with_config(callbacks=[handler])
-
-# ── FastAPI Middleware ─────────────────────────────────────────────────────
-from openclay.shields.integrations.fastapi import OpenClayMiddleware
-
-app.add_middleware(OpenClayMiddleware, shield=shield)
-
-# ── CrewAI ────────────────────────────────────────────────────────────────
-from openclay.shields.integrations.crewai import OpenClayCrewInterceptor
-
-interceptor = OpenClayCrewInterceptor(shield=shield)
-
-# ── LiteLLM ───────────────────────────────────────────────────────────────
-from openclay.shields.integrations.litellm import OpenClayLiteLLMCallback
-import litellm
-
-litellm.callbacks = [OpenClayLiteLLMCallback(shield=shield)]
-
-# ── LlamaIndex ────────────────────────────────────────────────────────────
-from openclay.shields.integrations.llamaindex import OpenClayLlamaGuard
-```
-
----
-
-### DeBERTa ML Model
-
-For highest accuracy, use the fine-tuned DeBERTa model hosted on Hugging Face:
-
-```python
-# Requires: pip install openclay[embed] transformers
-shield = Shield(
-    patterns=True,
-    models=["deberta"],   # Auto-downloads neuralchemy/prompt-injection-deberta on first use
-    model_threshold=0.65,
-)
-```
-
----
-
-### Custom Components
-
-You can extend the Shield with your own detection logic:
-
-```python
-from openclay.shields import ShieldComponent, ShieldResult, register_component
-
-@register_component("my_detector")
-class MyDetector(ShieldComponent):
-    def check(self, text: str, **context) -> ShieldResult:
-        if "bad_word" in text:
-            return ShieldResult(blocked=True, reason="custom_rule", threat_level=1.0)
-        return ShieldResult(blocked=False)
-
-shield = Shield(custom_components=["my_detector"])
-```
-
----
-
-### YAML Configuration
-
-```python
-shield = Shield.from_config("openclay.yml")
-```
-
-```yaml
-# openclay.yml
-patterns: true
-canary: true
-canary_mode: crypto
-rate_limiting: true
-rate_limit_base: 100
-session_tracking: true
-pii_detection: true
-models:
-  - random_forest
-  - logistic_regression
-sensitive_terms:
-  - project_aurora
-webhook_url: https://your-siem.example.com/alert
-```
-
 ---
 
 ## The OpenClay Ecosystem
 
 | Module | Status | Description |
 |---|---|---|
-| `openclay.shields` | ✅ **Ready** | Core threat detection engine (see above) |
-| `openclay.runtime` | 🚧 Draft | Secure execution wrapper for LangChain / CrewAI agents |
-| `openclay.tools` | 🚧 Draft | `@tool` decorators — scan tool outputs before returning to agent context |
-| `openclay.memory` | 🚧 Draft | Pre-write and pre-read poisoning prevention for RAG and vector databases |
-| `openclay.policies` | 🚧 Draft | Explicit, auditable rule engines: `StrictPolicy`, `ModeratePolicy`, `CustomPolicy` |
-| `openclay.tracing` | 🚧 Draft | Full explainability and telemetry for every blocked or allowed action |
-
-### Runtime Preview (v0.2.0)
-
-```python
-from openclay.runtime import SecureRuntime
-from openclay.policies import StrictPolicy
-
-runtime = SecureRuntime(policy=StrictPolicy())
-result = runtime.run(my_langchain_agent, user_input="Analyze evil.com")
-
-print(runtime.trace().summary())
-```
+| `openclay.shields` | ✅ **Ready** | Core threat detection engine |
+| `openclay.runtime` | ✅ **v0.2.0** | Secure execution wrapper (`ClayRuntime`) |
+| `openclay.tools` | ✅ **v0.2.0** | `@ClayTool` decorator for output interception |
+| `openclay.tracing` | ✅ **v0.2.0** | `Trace` explainability for every blocked action |
+| `openclay.memory` | 🚧 Draft | Pre-write and pre-read poisoning prevention |
+| `openclay.policies` | 🚧 Draft | `StrictPolicy`, `ModeratePolicy`, `CustomPolicy` |
 
 ---
 
 ## Migration: PromptShield → OpenClay
 
-`promptshields` (v3.0.1) is now **sunset** and will receive no further updates. All future development happens in `openclay`.
+`promptshields` (v3.0.1) is now **sunset** and will receive no further updates.
 
 ### Step 1 — Update your dependency
 
