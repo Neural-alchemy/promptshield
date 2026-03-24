@@ -5,7 +5,7 @@ Every boundary is a trust decision.
 OpenClay makes those decisions explicit.
 """
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 # ── Core Shield API ──────────────────────────────────────────────────
 from .shields import Shield, AsyncShield
@@ -22,9 +22,11 @@ from .tracing import Trace
 # ── Policies ─────────────────────────────────────────────────────────
 from .policies import Policy, StrictPolicy, ModeratePolicy, CustomPolicy
 
-# ── Stubs (future) ───────────────────────────────────────────────────
-from .agents import Agent
-from .memory import SecureMemory
+# ── Knights (v0.3.0) ────────────────────────────────────────────────
+from .knights import Knight, Squad
+
+# ── Memory (v0.3.0) ─────────────────────────────────────────────────
+from .memory import ClayMemory, MemoryWriteBlocked, MemoryReadBlocked
 
 __all__ = [
     # Shield
@@ -51,7 +53,12 @@ __all__ = [
     "ModeratePolicy",
     "CustomPolicy",
 
-    # Stubs
-    "Agent",
-    "SecureMemory",
+    # Knights (v0.3.0)
+    "Knight",
+    "Squad",
+
+    # Memory (v0.3.0)
+    "ClayMemory",
+    "MemoryWriteBlocked",
+    "MemoryReadBlocked",
 ]
