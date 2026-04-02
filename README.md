@@ -62,7 +62,7 @@ result = shield.protect_input(
 )
 
 if result["blocked"]:
-    print(f"🛡️ Blocked: {result['reason']}")
+    print(f"Blocked: {result['reason']}")
 ```
 
 ### ClayRuntime (Secure Execution)
