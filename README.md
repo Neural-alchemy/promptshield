@@ -28,7 +28,7 @@ Disclaimer: We are continuously conducting background research to better underst
 
 Every AI framework — LangChain, CrewAI, LlamaIndex — trusts the input, trusts the tools, trusts the memory. OpenClay operates on the opposite principle:
 
-> **You don't build an agent and bolt on security.
+> **You don't build an agent and built on security.
 > You define a Security Policy, and the agent executes *inside* it.**
 
 ---
