@@ -143,10 +143,10 @@ golem.stop()
 ## Shield Presets
 
 ```python
-Shield.fast()       # ⚡ Pattern-only, <1ms
-Shield.balanced()   # ⚖️ Patterns + session tracking, ~2ms (default)
-Shield.strict()     # 🔒 + ML model + rate limiting + PII, ~7ms
-Shield.secure()     # 🛡️ Full ensemble (RF + LR + SVM + GBT), ~12ms
+Shield.fast()       # Pattern-only, <1ms
+Shield.balanced()   # Patterns + session tracking, ~2ms (default)
+Shield.strict()     # + ML model + rate limiting + PII, ~7ms
+Shield.secure()     # Full ensemble (RF + LR + SVM + GBT), ~12ms
 ```
 
 ---
@@ -164,10 +164,10 @@ from openclay.shields.integrations.crewai import OpenClayCrewInterceptor
 
 ## Links
 
-- 📖 [Full Documentation](https://doc.neuralchemy.in)
-- 📦 [PyPI](https://pypi.org/project/openclay/)
-- 🤗 [DeBERTa Model](https://huggingface.co/neuralchemy/prompt-injection-deberta)
-- 🐛 [GitHub Issues](https://github.com/openclay-ai/openclay/issues)
+-  [Full Documentation](https://doc.neuralchemy.in)
+-  [PyPI](https://pypi.org/project/openclay/)
+-  [DeBERTa Model](https://huggingface.co/neuralchemy/prompt-injection-deberta)
+-  [GitHub Issues](https://github.com/openclay-ai/openclay/issues)
 
 ---
 
